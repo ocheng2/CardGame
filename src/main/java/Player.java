@@ -29,6 +29,28 @@ public class Player {
     public int getPoints() {
         return points;
     }
+
+    public void addPoints (int newPoint)
+    {
+        points += newPoint;
+    }
+
+    public void addCard (Card newCard)
+    {
+        hand.add(newCard);
+    }
+
+    public String toString()
+    {
+        String statement = this.name + " has " + this.points + " points\n"
+                + this.name + "'s cards: ";
+
+        for (Card card: hand)
+        {
+            statement += card.toString() + ", ";
+        }
+        return statement;
+    }
 }
 
 
