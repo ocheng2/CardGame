@@ -6,12 +6,15 @@ public class Deck {
 
     public Deck(String[] ranks, String[] suits, int[] values)
     {
+        cards = new ArrayList<Card>();
+
         for (int i = 0; i < ranks.length; i++)
         {
             cards.add(new Card(ranks[i], suits[i], values[i]));
         }
 
         cardsLeft = cards.size();
+        shuffle();
     }
 
     public boolean isEmpty()
