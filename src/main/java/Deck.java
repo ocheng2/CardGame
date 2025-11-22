@@ -1,16 +1,30 @@
 import java.util.ArrayList;
 
 public class Deck {
-    private ArrayList<Card> cards;
+    private final ArrayList<Card> cards;
     private int cardsLeft;
 
-    public Deck(String[] ranks, String[] suits, int[] values)
+    public Deck(String[] ranks, String[] suits, int[] numCards)
     {
         cards = new ArrayList<Card>();
 
-        for (int i = 0; i < ranks.length; i++)
+        for (int i = 0; i < suits.length; i++)
         {
-            cards.add(new Card(ranks[i], suits[i], values[i]));
+            for (int j = 0; j < ranks.length; j++)
+            {
+                cards.add(new Card(ranks[i], suits[i]));
+
+                if (numCards[i] == 2)
+                {
+                    cards.add(new Card(ranks[i], suits[i]));
+                }
+                else if (numCards[i] == 4)
+                {
+                    cards.add(new Card(ranks[i], suits[i]));
+                    cards.add(new Card(ranks[i], suits[i]));
+                    cards.add(new Card(ranks[i], suits[i]));
+                }
+            }
         }
 
         cardsLeft = cards.size();
