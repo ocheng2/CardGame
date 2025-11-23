@@ -12,17 +12,15 @@ public class Deck {
         {
             for (int j = 0; j < ranks.length; j++)
             {
-                cards.add(new Card(ranks[i], suits[i]));
+                cards.add(new Card(ranks[j], suits[i]));
 
-                if (numCards[i] == 2)
+                // Add extra copies depending on number of Cards needed
+                // Subtract 1 to count the card we just made
+                int extra = numCards[i] - 1;
+
+                for (int k = 0; k < extra; k++)
                 {
-                    cards.add(new Card(ranks[i], suits[i]));
-                }
-                else if (numCards[i] == 4)
-                {
-                    cards.add(new Card(ranks[i], suits[i]));
-                    cards.add(new Card(ranks[i], suits[i]));
-                    cards.add(new Card(ranks[i], suits[i]));
+                    cards.add(new Card(ranks[j], suits[i]));
                 }
             }
         }
