@@ -3,17 +3,20 @@ import java.util.ArrayList;
 public class Player {
     private final String name;
     private ArrayList<Card> hand;
+    private int points;
 
     public Player(String name)
     {
         this.name = name;
         this.hand = new ArrayList<>();
+        this.points = 0;
     }
 
     public Player (String name, ArrayList<Card> hand)
     {
         this.name = name;
         this.hand = new ArrayList<>(hand);
+        this.points = 0;
     }
 
     // Getter Methods for all Instance variables
@@ -25,11 +28,15 @@ public class Player {
         return hand;
     }
 
-    // DON'T NEED
-//    public void addPoints (int newPoint)
-//    {
-//        points += newPoint;
-//    }
+    public int getPoints()
+    {
+        return points;
+    }
+
+    public void addPoints (int newPoint)
+    {
+        points += newPoint;
+    }
 
     // Add card to Player's hand
     public void addCard (Card newCard)
@@ -37,6 +44,7 @@ public class Player {
         hand.add(newCard);
     }
 
+    // Remove card from Player's hand
     public void removeCard(Card newCard)
     {
         hand.remove(newCard);
@@ -53,10 +61,22 @@ public class Player {
         String statement = "It is " + this.name + "'s turn. Here are "
                 + this.name + "'s cards: ";
 
-        for (Card card: hand)
+        for (int i = 0; i < hand.size(); i++)
         {
-            statement += card.toString() + ", ";
+            statement += hand.get(i).toString();
+
+            // Adds a comma to the end of each card's toString
+            if (i != hand.size() - 1)
+            {
+                statement += ",";
+            }
+            // Adds a period to the end of the last card in the player's hand
+            else
+            {
+                statement += ".";
+            }
         }
+
         return statement;
     }
 }
