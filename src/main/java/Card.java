@@ -8,12 +8,11 @@ public class Card {
         this.suit = suit;
     }
 
-    // i.e. 1, 2, Draw
+    // Getter and setter methods of rank and suit
     public String getRank() {
         return rank;
     }
 
-    // Color
     public void setRank(String rank) {
         this.rank = rank;
     }
