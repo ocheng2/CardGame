@@ -69,12 +69,12 @@ public class Player {
             // Adds a comma to the end of each card's toString
             if (i != hand.size() - 1)
             {
-                statement += ",";
+                statement += ", ";
             }
             // Adds a period to the end of the last card in the player's hand
             else
             {
-                statement += ".";
+                statement += ". ";
             }
         }
 
