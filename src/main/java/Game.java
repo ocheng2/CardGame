@@ -40,6 +40,28 @@ public class Game {
         playerIndex = 0;
     }
 
+    public static void printInstructions()
+    {
+        System.out.println("Welcome to UNO!");
+        System.out.println("Instructions: ");
+        System.out.println("Each player's hand begins with 7 cards. " +
+                "The objective of the game is to be the first player with no cards left!");
+        System.out.println("Player's can put down a card from their hand, " +
+                "if the card matches the number or color of the top card, or if the card is a Wild or Wild Draw.");
+        System.out.println();
+        System.out.println("Different Types of Cards:");
+        System.out.println("Draw Two: forces the next player to add two cards to their hand");
+        System.out.println("Skip: skips the turn of the next player");
+        System.out.println("Wild: changes the color of the top card");
+        System.out.println("Wild Draw: changes the color of the top card, adds four cards to the next player's hand," +
+                " and skips the next player's turn.");
+        System.out.println();
+        System.out.println("Reminder:");
+        System.out.println("Have Fun! And, if the program rejects your input, double check your spelling and capitalization!");
+        System.out.println();
+    }
+
+    // Ends when a Player wins, asks the user if they would want to draw or place, then calling methods to execute
     public Player playGame()
     {
         // Sets up the current player
@@ -64,6 +86,7 @@ public class Game {
                 }
                 while (!action.equals("YES") && !action.equals("NO"));
 
+                // Depending on the user's action, the Player can put down or draw a card
                 if (action.equals("YES"))
                 {
                     putCard(currPlayer);
@@ -94,6 +117,53 @@ public class Game {
         return players[playerIndex];
     }
 
+    // Checks if the player is able to put any cards down
+    public boolean isValidPlayer(ArrayList<Card> hand)
+    {
+        for (Card card: hand)
+        {
+            if (card.getRank().equals(topCard.getRank())
+                    || card.getSuit().equals(topCard.getSuit())
+                    || card.getRank().equals("Wild")
+                    || card.getRank().equals("Wild Draw"))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Draws a card for the Player, and if playable, asks if they would like to put it down
+    public void drawCard (Player player)
+    {
+        // Draw a card
+        Card newCard = deck.deal();
+        player.addCard(newCard);
+
+        // Print the card suit and rank
+        System.out.println("Draw a card:" + newCard.toString());
+
+        // Check if the drawn card is playable
+        if (isValidCard(newCard))
+        {
+            // Ask the user if they want to play their newly drawn card
+            String action;
+            do
+            {
+                System.out.println("Would you like to place your newly drawn card down? (Yes/No)");
+                action = input.nextLine().toUpperCase();
+            }
+            while (!action.equals("YES") && !action.equals("NO"));
+
+            // Player puts the new drawn card down; update the topCard and their hand
+            if (action.equals("YES"))
+            {
+                cases(newCard, player);
+            }
+        }
+    }
+
+    // Asks the user for a valid Card to place down, and calls the next function to execute the rank of the card
     public void putCard(Player player)
     {
         // Asks the player the card they would like to place
@@ -103,14 +173,36 @@ public class Game {
         {
             System.out.println("What card would you like to place? (Rank of Suit)");
             String inputCard = input.nextLine();
-            chosenCard = getCardFromInput(player, inputCard);
+            chosenCard = getCardFromHand(player, inputCard);
         }
         while (chosenCard == null || !isValidCard(chosenCard));
 
         cases(chosenCard, player);
     }
 
-    // Depending on the rank or suit of the card, certain actions will be done
+    // Checks if the card Player choose to put down is apart of their hand and returns the Card
+    public Card getCardFromHand(Player player, String selectedCard)
+    {
+        for (Card card: player.getHand())
+        {
+            if (card.toString().equals(selectedCard))
+            {
+                return card;
+            }
+        }
+        return null;
+    }
+
+    // Checks if the card fits the criteria to be put down
+    public boolean isValidCard (Card card)
+    {
+        return card.getRank().equals(topCard.getRank())
+                || card.getSuit().equals(topCard.getSuit())
+                || card.getRank().equals("Wild")
+                || card.getRank().equals("Wild Draw");
+    }
+
+    // Depending on the rank of the card, certain methods will be called
     public void  cases(Card chosenCard, Player player)
     {
         switch (chosenCard.getRank()) {
@@ -177,94 +269,6 @@ public class Game {
 
         System.out.println(player.getName() + " is skipping " + players[indexNext].getName() + "'s turn!");
         playerIndex++;
-    }
-
-    // Checks if the card Player choose to put down is part of their deck and resets the topCard
-    public Card getCardFromInput(Player player, String selectedCard)
-    {
-        for (Card card: player.getHand())
-        {
-            if (card.toString().equals(selectedCard))
-            {
-                return card;
-            }
-        }
-        return null;
-    }
-
-    public void drawCard (Player player)
-    {
-        // Draw a card
-        Card newCard = deck.deal();
-        player.addCard(newCard);
-
-        // Print the card suit and rank
-        System.out.println("Draw a card:" + newCard.toString());
-
-        // Check if the drawn card is playable
-        if (isValidCard(newCard))
-        {
-            // Ask the user if they want to play their newly drawn card
-            String action;
-            do
-            {
-                System.out.println("Would you like to place your newly drawn card down? (Yes/No)");
-                action = input.nextLine().toUpperCase();
-            }
-            while (!action.equals("YES") && !action.equals("NO"));
-
-            // Player puts the new drawn card down; update the topCard and their hand
-            if (action.equals("YES"))
-            {
-                cases(newCard, player);
-            }
-        }
-    }
-
-    // Checks if the card fits the criteria to be put down
-    public boolean isValidCard (Card card)
-    {
-        return card.getRank().equals(topCard.getRank())
-            || card.getSuit().equals(topCard.getSuit())
-            || card.getRank().equals("Wild")
-            || card.getRank().equals("Wild Draw");
-    }
-
-    // Checks if the player's hand has cards that fits the criteria to be put down
-    public boolean isValidPlayer(ArrayList<Card> hand)
-    {
-        for (Card card: hand)
-        {
-            if (card.getRank().equals(topCard.getRank())
-                    || card.getSuit().equals(topCard.getSuit())
-                    || card.getRank().equals("Wild")
-                    || card.getRank().equals("Wild Draw"))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static void printInstructions()
-    {
-        System.out.println("Welcome to UNO!");
-        System.out.println("Instructions: ");
-        System.out.println("Each player's hand begins with 7 cards. " +
-                "The objective of the game is to be the first player with no cards left!");
-        System.out.println("Player's can put down a card from their hand, " +
-                "if the card matches the number or color of the top card, or if the card is a Wild or Wild Draw.");
-        System.out.println();
-        System.out.println("Different Types of Cards:");
-        System.out.println("Draw Two: forces the next player to add two cards to their hand");
-        System.out.println("Skip: skips the turn of the next player");
-        System.out.println("Wild: changes the color of the top card");
-        System.out.println("Wild Draw: changes the color of the top card, adds four cards to the next player's hand," +
-                " and skips the next player's turn.");
-        System.out.println();
-        System.out.println("Reminder:");
-        System.out.println("Have Fun! And, if the program rejects your input, double check your spelling and capitalization!");
-        System.out.println();
     }
 
     static void main(String[] args) {
