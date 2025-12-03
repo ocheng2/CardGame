@@ -56,6 +56,7 @@ public class Player {
         return hand.isEmpty();
     }
 
+    // Creates a message about the Player's name and the Cards in their hand
     public String toString()
     {
         String statement = "It is " + this.name + "'s turn. Here are "
