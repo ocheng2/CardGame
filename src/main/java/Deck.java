@@ -10,17 +10,17 @@ public class Deck {
 
         for (int i = 0; i < suits.length; i++)
         {
-            for (int j = 0; j < ranks.length; j++)
+            for (String rank: ranks)
             {
-                cards.add(new Card(ranks[j], suits[i]));
+                cards.add(new Card(rank, suits[i]));
 
-                // Add extra copies depending on number of Cards needed
-                // Subtract 1 to count the card we just made
+                // Make extra copies of a certain card depending on the number needed
+                // Subtract 1 to include the card we just made
                 int extra = numCards[i] - 1;
 
                 for (int k = 0; k < extra; k++)
                 {
-                    cards.add(new Card(ranks[j], suits[i]));
+                    cards.add(new Card(rank, suits[i]));
                 }
             }
         }
@@ -31,11 +31,7 @@ public class Deck {
 
     public boolean isEmpty()
     {
-        if (cardsLeft == 0)
-        {
-            return true;
-        }
-        return false;
+        return cardsLeft == 0;
     }
 
     public int getCardsLeft()
@@ -43,6 +39,7 @@ public class Deck {
         return cardsLeft;
     }
 
+    // Returns the card at the end of our deck array
     public Card deal()
     {
         if (isEmpty())
@@ -50,20 +47,27 @@ public class Deck {
             return null;
         }
 
+        // Update the number of cards in deck
         cardsLeft--;
+
         return cards.get(cardsLeft);
     }
 
     public void shuffle()
     {
+        // Iterates through the deck array from the end to the beginning
         for (int i = cards.size() - 1; i >= 0; i--)
         {
+            // Generates a random integer from range: 0-i
             int random = (int)(Math.random() * i);
-            Card placeholder = cards.get(i);
 
+            // Switches the current card at index i with the card at the random index
+            Card placeholder = cards.get(i);
             cards.set(i, cards.get(random));
             cards.set(random, placeholder);
         }
+
+        // Resets the values of cardsLeft to the size of deck
         cardsLeft = cards.size();
     }
 }
