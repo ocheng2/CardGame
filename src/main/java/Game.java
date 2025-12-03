@@ -140,6 +140,7 @@ public class Game {
         player.removeCard(chosenCard);
     }
 
+    // Resets the color of the top card based on user input
     public void wild()
     {
         String inputColor;
@@ -153,6 +154,7 @@ public class Game {
         topCard.setSuit(inputColor);
     }
 
+    // Adds extra cards to the next player's hand
     public void extraCards(int numCards)
     {
         int indexNext = (playerIndex + 1) % players.length;
@@ -168,6 +170,7 @@ public class Game {
         }
     }
 
+    // Skips the turn of the next player
     public void skip(Player player)
     {
         int indexNext = (playerIndex + 1) % players.length;
@@ -245,7 +248,23 @@ public class Game {
 
     public static void printInstructions()
     {
-        System.out.println("Instructions");
+        System.out.println("Welcome to UNO!");
+        System.out.println("Instructions: ");
+        System.out.println("Each player's hand begins with 7 cards. " +
+                "The objective of the game is to be the first player with no cards left!");
+        System.out.println("Player's can put down a card from their hand, " +
+                "if the card matches the number or color of the top card, or if the card is a Wild or Wild Draw.");
+        System.out.println();
+        System.out.println("Different Types of Cards:");
+        System.out.println("Draw Two: forces the next player to add two cards to their hand");
+        System.out.println("Skip: skips the turn of the next player");
+        System.out.println("Wild: changes the color of the top card");
+        System.out.println("Wild Draw: changes the color of the top card, adds four cards to the next player's hand," +
+                " and skips the next player's turn.");
+        System.out.println();
+        System.out.println("Reminder:");
+        System.out.println("Have Fun! And, if the program rejects your input, double check your spelling and capitalization!");
+        System.out.println();
     }
 
     static void main(String[] args) {
