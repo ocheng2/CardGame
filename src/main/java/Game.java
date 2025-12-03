@@ -3,25 +3,25 @@ import java.util.Scanner;
 
 public class Game {
     private static final int initialCardNum = 7;
-    private Card topCard;
-    private int index;
-
-    private Player[] players;
-    private Deck deck;
     private static Scanner input = new Scanner(System.in);
+
+    private Card topCard;
+    private Deck deck;
+    private Player[] players;
+    private int playerIndex;
 
     public Game(int numPlayers, String[] playerNames) {
         players = new Player[numPlayers];
 
-        // Creates instances of Player Class and sets it into the players array
+        // Creates instances of Player Class and adds it into the players array
         for (int i = 0; i < numPlayers; i++) {
             players[i] = new Player(playerNames[i]);
         }
 
-        // Initialize the deck
+        // Calls to the Deck class to initialize an instance of a deck
         String[] ranks = {
                 "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-                "Skip", "Reverse", "Draw Two", "Wild", "Wild Draw"};
+                "Skip", "Draw Two", "Wild", "Wild Draw"};
         String[] suits = {"Red", "Yellow", "Green", "Blue"};
         int[] numCards = {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4};
 
@@ -37,19 +37,21 @@ public class Game {
         }
 
         topCard = deck.deal();
-        index = 0;
+        playerIndex = 0;
     }
 
     public Player playGame()
     {
-        Player currPlayer = players[index];
-        // go through each player
+        // Sets up the current player
+        Player currPlayer = players[playerIndex];
+
+        // Continues the game until a player has no more cards left
         while (!currPlayer.isWon())
         {
-            // Print their hand and turn
+            // Print the current player's name, hand, and the current topCard
              System.out.println(currPlayer.toString());
-
              System.out.println("The top card is currently: " + topCard.toString());
+
              // Check if the player's hand has a card that is valid to put down
             if (isValidPlayer(currPlayer.getHand()))
             {
@@ -58,11 +60,11 @@ public class Game {
                 do
                 {
                     System.out.println("Would you like to place a card or draw? (Yes for Card/No for Draw)");
-                    action = input.nextLine();
+                    action = input.nextLine().toUpperCase();
                 }
-                while (!action.equals("Yes") && !action.equals("No"));
+                while (!action.equals("YES") && !action.equals("NO"));
 
-                if (action.equals("Yes"))
+                if (action.equals("YES"))
                 {
                     putCard(currPlayer);
                 }
@@ -71,7 +73,7 @@ public class Game {
                     drawCard(currPlayer);
                 }
             }
-            // If no valid card that matches top card, must draw
+            // If player's hand does not have a valid card that matches top card, they must draw
             else
             {
                 drawCard(currPlayer);
@@ -84,18 +86,19 @@ public class Game {
             }
 
             // Move on to next player
-            index = (index + 1) % players.length;
+            playerIndex = (playerIndex + 1) % players.length;
 
-            currPlayer = players[index];
+            currPlayer = players[playerIndex];
         }
-
-        return players[index];
+        // Returns the Player that won
+        return players[playerIndex];
     }
 
     public void putCard(Player player)
     {
         // Asks the player the card they would like to place
         Card chosenCard = null;
+
         do
         {
             System.out.println("What card would you like to place? (Rank of Suit)");
@@ -104,10 +107,11 @@ public class Game {
         }
         while (chosenCard == null || !isValidCard(chosenCard));
 
-        specialCases(chosenCard, player);
+        cases(chosenCard, player);
     }
 
-    public void specialCases(Card chosenCard, Player player)
+    // Depending on the rank or suit of the card, certain actions will be done
+    public void  cases(Card chosenCard, Player player)
     {
         switch (chosenCard.getRank()) {
             case "Wild" ->
@@ -123,11 +127,7 @@ public class Game {
             case "Skip" ->
             {
                 skip(player);
-
             }
-//            case "Reverse" ->
-//            {
-//            }
             case "Draw Two" ->
             {
                 extraCards(2);
@@ -155,7 +155,7 @@ public class Game {
 
     public void extraCards(int numCards)
     {
-        int indexNext = (index + 1) % players.length;
+        int indexNext = (playerIndex + 1) % players.length;
 
         System.out.println(players[indexNext].getName() + " must draw " + numCards + " cards!");
         System.out.println("The cards are: ");
@@ -170,10 +170,10 @@ public class Game {
 
     public void skip(Player player)
     {
-        int indexNext = (index + 1) % players.length;
+        int indexNext = (playerIndex + 1) % players.length;
 
-        System.out.println(player.getName() + " is skipping " + players[indexNext] + "'s turn!");
-        index++;
+        System.out.println(player.getName() + " is skipping " + players[indexNext].getName() + "'s turn!");
+        playerIndex++;
     }
 
     // Checks if the card Player choose to put down is part of their deck and resets the topCard
@@ -206,14 +206,14 @@ public class Game {
             do
             {
                 System.out.println("Would you like to place your newly drawn card down? (Yes/No)");
-                action = input.nextLine();
+                action = input.nextLine().toUpperCase();
             }
-            while (!action.equals("Yes") && !action.equals("No"));
+            while (!action.equals("YES") && !action.equals("NO"));
 
             // Player puts the new drawn card down; update the topCard and their hand
-            if (action.equals("Yes"))
+            if (action.equals("YES"))
             {
-                specialCases(newCard, player);
+                cases(newCard, player);
             }
         }
     }
