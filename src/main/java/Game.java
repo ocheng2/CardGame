@@ -1,8 +1,9 @@
+// Game Class by Olivia Cheng
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game {
-    private static final int initialCardNum = 7;
+    private static final int DRAW_NUM = 7;
     private static Scanner input = new Scanner(System.in);
 
     private Card topCard;
@@ -10,7 +11,22 @@ public class Game {
     private Player[] players;
     private int playerIndex;
 
-    public Game(int numPlayers, String[] playerNames) {
+    public Game() {
+        // Ask and store user input on number of players
+        System.out.println("How many players would you like?");
+        int numPlayers = input.nextInt();
+        input.nextLine();
+
+        // Create an array for each Player's name
+        String[] playerNames = new String[numPlayers];
+
+        // Asks for each Player's name and store in array names
+        for (int i = 0; i < numPlayers; i++)
+        {
+            System.out.println("What is your name " + "Player " + (i+1) + "?");
+            playerNames[i] = input.nextLine();
+        }
+
         players = new Player[numPlayers];
 
         // Creates instances of Player Class and adds it into the players array
@@ -30,7 +46,7 @@ public class Game {
         // Gives each player 7 cards for their hand
         for (Player player: players)
         {
-            for (int i = 0; i < initialCardNum; i++)
+            for (int i = 0; i < DRAW_NUM; i++)
             {
                 player.addCard(deck.deal());
             }
@@ -134,7 +150,7 @@ public class Game {
     }
 
     // Draws a card for the Player, and if playable, asks if they would like to put it down
-    public void drawCard (Player player)
+    public void drawCard(Player player)
     {
         // Draw a card
         Card newCard = deck.deal();
@@ -194,7 +210,7 @@ public class Game {
     }
 
     // Checks if the card fits the criteria to be put down
-    public boolean isValidCard (Card card)
+    public boolean isValidCard(Card card)
     {
         return card.getRank().equals(topCard.getRank())
                 || card.getSuit().equals(topCard.getSuit())
@@ -203,7 +219,7 @@ public class Game {
     }
 
     // Depending on the rank of the card, certain methods will be called
-    public void  cases(Card chosenCard, Player player)
+    public void cases(Card chosenCard, Player player)
     {
         switch (chosenCard.getRank()) {
             case "Wild" ->
@@ -271,26 +287,11 @@ public class Game {
         playerIndex++;
     }
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
         printInstructions();
 
-        // Ask and store user input on number of players
-        System.out.println("How many players would you like?");
-        int numPlayers = input.nextInt();
-        input.nextLine();
-
-        // Create an array for each Player's name
-        String[] names = new String[numPlayers];
-
-        // Asks for each Player's name and store in array names
-        for (int i = 0; i < numPlayers; i++)
-        {
-            System.out.println("What is your name " + "Player " + (i+1) + "?");
-            names[i] = input.nextLine();
-        }
-
         // Creates an instance of the Game class
-        Game uno = new Game(numPlayers, names);
+        Game uno = new Game();
 
         Player winner = uno.playGame();
 

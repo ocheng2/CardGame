@@ -1,3 +1,4 @@
+// Player Class by Olivia Cheng
 import java.util.ArrayList;
 
 public class Player {

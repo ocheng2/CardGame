@@ -1,7 +1,8 @@
+// Deck Class by Olivia Cheng
 import java.util.ArrayList;
 
 public class Deck {
-    private final ArrayList<Card> cards;
+    private ArrayList<Card> cards;
     private int cardsLeft;
 
     public Deck(String[] ranks, String[] suits, int[] numCards)
