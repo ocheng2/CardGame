@@ -1,4 +1,5 @@
 // Game Class by Olivia Cheng
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -11,11 +12,26 @@ public class Game {
     private Player[] players;
     private int playerIndex;
 
+    private GameView window;
+
+    private int state;
+    public static final int STATE_INSTRU = 0;
+    public static final int STATE_MAIN = 1;
+    public static final int STATE_END = 2;
+
     public Game() {
+        this.state = STATE_INSTRU;
+        window = new GameView(this);
+
+        printInstructions();
+        System.out.println("hit \"ENTER\" to start the game.");
+        input.nextLine();
+
         // Ask and store user input on number of players
         System.out.println("How many players would you like?");
         int numPlayers = input.nextInt();
         input.nextLine();
+
 
         // Create an array for each Player's name
         String[] playerNames = new String[numPlayers];
@@ -54,6 +70,21 @@ public class Game {
 
         topCard = deck.deal();
         playerIndex = 0;
+
+        state = STATE_MAIN;
+        window.repaint();
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public Player getCurrPlayer() {
+        return players[playerIndex];
+    }
+
+    public Card getTopCard() {
+        return topCard;
     }
 
     public static void printInstructions()
@@ -87,8 +118,9 @@ public class Game {
         while (!currPlayer.isWon())
         {
             // Print the current player's name, hand, and the current topCard
-             System.out.println(currPlayer.toString());
-             System.out.println("The top card is currently: " + topCard.toString());
+            System.out.println(currPlayer.toString());
+            System.out.println("The top card is currently: " + topCard.toString());
+            window.repaint();
 
              // Check if the player's hand has a card that is valid to put down
             if (isValidPlayer(currPlayer.getHand()))
@@ -288,8 +320,6 @@ public class Game {
     }
 
     public static void main(String[] args) {
-        printInstructions();
-
         // Creates an instance of the Game class
         Game uno = new Game();
 
