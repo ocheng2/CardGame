@@ -9,6 +9,9 @@ public class Card {
     private int x;
     private int y;
 
+    public static final int CARD_WIDTH = 60;
+    public static final int CARD_HEIGHT = 90;
+
     public Card (String rank, String suit)
     {
         this.rank = rank;
@@ -46,24 +49,42 @@ public class Card {
         if (rank.equals("Wild") || rank.equals("Wild Draw")) {
             return Color.BLACK;
         } else if(suit.equals("Red")) {
-            return Color.RED;
+            return new Color(204,0,0);
         } else if (suit.equals("Yellow")) {
-            return Color.YELLOW;
+            return new Color (241,194,50);
         } else if (suit.equals("Green")) {
-            return Color.GREEN;
+            return new Color(56,118,29);
         } else {
-            return Color.BLUE;
+            return new Color(62, 133, 198);
+        }
+    }
+
+    public void drawBack(Graphics g, int x, int y, boolean flip) {
+        g.setColor(Color.BLACK);
+
+        if (flip) {
+            g.fillRoundRect(x, y, CARD_HEIGHT, CARD_WIDTH, 12, 12);
+
+            // Draw the outline
+            g.setColor(Color.white);
+            g.drawRoundRect(x+7,y+5, CARD_HEIGHT- 16, CARD_WIDTH - 10,12, 12);
+        } else {
+            g.fillRoundRect(x, y, CARD_WIDTH, CARD_HEIGHT, 12, 12);
+
+            // Draw the outline
+            g.setColor(Color.white);
+            g.drawRoundRect(x+5,y+7, CARD_WIDTH - 10,CARD_HEIGHT - 16, 12, 12);
         }
     }
 
     public void draw(Graphics g, int x, int y) {
         // Draw the card
         g.setColor(getColor());
-        g.fillRoundRect(x, y, 60, 90, 12, 12);
+        g.fillRoundRect(x, y, CARD_WIDTH, CARD_HEIGHT, 12, 12);
 
         // Draw the outline
         g.setColor(Color.white);
-        g.drawRoundRect(x+5,y+7, 50, 74, 12, 12);
+        g.drawRoundRect(x+5,y+7, CARD_WIDTH - 10, CARD_HEIGHT - 16, 12, 12);
 
         String s = rank;
         Boolean doubleDigit = false;
@@ -85,7 +106,7 @@ public class Card {
         g.setFont(new Font("Monospaced", Font.PLAIN, 40));
         if (doubleDigit) {
             // TODO: fix the symmetry
-            g.drawString(s, x + 5, y + 60);
+            g.drawString(s, x + 8, y + 60);
         } else {
             g.drawString(s, x + 18, y + 60);
         }
