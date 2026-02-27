@@ -15,20 +15,23 @@ public class Game {
     private GameView window;
 
     private int state;
+    public static final int STATE_BEGIN = 3;
     public static final int STATE_INSTRU = 0;
     public static final int STATE_MAIN = 1;
     public static final int STATE_END = 2;
 
     public Game() {
-        this.state = STATE_INSTRU;
+        this.state = STATE_BEGIN;
         window = new GameView(this);
-
-        printInstructions();
-        System.out.println("hit \"ENTER\" to start the game.");
+        System.out.println("hit \"ENTER\" to go to the instructions.");
         input.nextLine();
 
+        this.state = STATE_INSTRU;
+        printInstructions();
+        window.repaint();
+
         // Ask and store user input on number of players
-        System.out.println("How many players would you like?");
+        System.out.println("How many players would you like? (Max 4)");
         int numPlayers = input.nextInt();
         input.nextLine();
 
@@ -79,8 +82,12 @@ public class Game {
         return state;
     }
 
-    public Player getCurrPlayer() {
-        return players[playerIndex];
+    public int getCurrPlayerIndex() {
+        return this.playerIndex;
+    }
+
+    public Player[] getPlayers() {
+        return players;
     }
 
     public Card getTopCard() {
@@ -120,7 +127,6 @@ public class Game {
             // Print the current player's name, hand, and the current topCard
             System.out.println(currPlayer.toString());
             System.out.println("The top card is currently: " + topCard.toString());
-            window.repaint();
 
              // Check if the player's hand has a card that is valid to put down
             if (isValidPlayer(currPlayer.getHand()))
@@ -150,9 +156,12 @@ public class Game {
                 drawCard(currPlayer);
             }
 
+            window.repaint();
+
             // Check if the current player won
             if (currPlayer.isWon())
             {
+                window.repaint();
                 break;
             }
 
