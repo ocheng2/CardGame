@@ -15,26 +15,33 @@ public class Game {
     private GameView window;
 
     private int state;
-    public static final int STATE_BEGIN = 3;
-    public static final int STATE_INSTRU = 0;
-    public static final int STATE_MAIN = 1;
-    public static final int STATE_END = 2;
+
+    public static final int STATE_BEGIN = 0;
+    public static final int STATE_INSTRU = 1;
+    public static final int STATE_MAIN = 2;
+    public static final int STATE_END = 3;
 
     public Game() {
+        // Set up with the initial Uno title view
         this.state = STATE_BEGIN;
         window = new GameView(this);
-        System.out.println("hit \"ENTER\" to go to the instructions.");
+        System.out.println("Hit \"ENTER\" to go to the Instructions and fill out the basic information.");
         input.nextLine();
 
+        // Set up the instructions view
         this.state = STATE_INSTRU;
         printInstructions();
         window.repaint();
 
         // Ask and store user input on number of players
-        System.out.println("How many players would you like? (Max 4)");
-        int numPlayers = input.nextInt();
-        input.nextLine();
+        int numPlayers = 0;
+        while (numPlayers < 2 || numPlayers > 4) {
+            System.out.println("How many players would you like? (From 2-4)");
 
+            // Set up numPlayers
+            numPlayers = input.nextInt();
+            input.nextLine();
+        }
 
         // Create an array for each Player's name
         String[] playerNames = new String[numPlayers];
@@ -74,6 +81,7 @@ public class Game {
         topCard = deck.deal();
         playerIndex = 0;
 
+        // Set up the game state
         state = STATE_MAIN;
         window.repaint();
     }
@@ -93,6 +101,7 @@ public class Game {
     public Card getTopCard() {
         return topCard;
     }
+
 
     public static void printInstructions()
     {
@@ -156,6 +165,7 @@ public class Game {
                 drawCard(currPlayer);
             }
 
+            // Given that there was user action to their hand, update the view
             window.repaint();
 
             // Check if the current player won
@@ -170,7 +180,10 @@ public class Game {
 
             currPlayer = players[playerIndex];
         }
-        // Returns the Player that won
+
+        // At the end of the game, change to the final ending state
+        state = STATE_END;
+        window.repaint();
         return players[playerIndex];
     }
 
@@ -333,7 +346,6 @@ public class Game {
         Game uno = new Game();
 
         Player winner = uno.playGame();
-
         System.out.println(winner.getName() + " is the winner of UNO!");
     }
 }
