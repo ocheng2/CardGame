@@ -6,11 +6,28 @@ public class Card {
     private String rank;
     private String suit;
     private int value;
-    private int x;
-    private int y;
 
     public static final int CARD_WIDTH = 60;
     public static final int CARD_HEIGHT = 90;
+    public static final int OUTLINE_WIDTH = 50;
+    public static final int OUTLINE_HEIGHT = 74;
+
+    // Uno Colors
+    public static final Color UNO_RED = new Color(204, 0, 0);
+    public static final Color UNO_YELLOW = new Color(241, 194, 50);
+    public static final Color UNO_GREEN = new Color(56, 118, 29);
+    public static final Color UNO_BLUE = new Color(62, 133, 198);
+
+    // Padding
+    public static final int CORNER_RADIUS = 12;
+    public static final int OUTLINE_MARGIN_X = 5;
+    public static final int OUTLINE_MARGIN_Y = 7;
+    public static final int FONT_MARGIN_Y = 60;
+    public static final int FONT_MARGIN_SINGLEX = 8;
+    public static final int FONT_MARGIN_DOUBLEX = 18;
+
+    // Font Size
+    public static final int FONT_SIZE = 40;
 
     public Card (String rank, String suit)
     {
@@ -38,7 +55,7 @@ public class Card {
 
     public int getValue() { return value; }
 
-    public void setValue(int value) { this.suit = suit; }
+    public void setValue(int value) { this.value = value; }
 
     public String toString()
     {
@@ -49,13 +66,13 @@ public class Card {
         if (rank.equals("Wild") || rank.equals("Wild Draw")) {
             return Color.BLACK;
         } else if(suit.equals("Red")) {
-            return new Color(204,0,0);
+            return UNO_RED;
         } else if (suit.equals("Yellow")) {
-            return new Color (241,194,50);
+            return UNO_YELLOW;
         } else if (suit.equals("Green")) {
-            return new Color(56,118,29);
+            return UNO_GREEN;
         } else {
-            return new Color(62, 133, 198);
+            return UNO_BLUE;
         }
     }
 
@@ -63,31 +80,35 @@ public class Card {
         g.setColor(Color.BLACK);
 
         if (flip) {
-            g.fillRoundRect(x, y, CARD_HEIGHT, CARD_WIDTH, 12, 12);
+            g.fillRoundRect(x, y, CARD_HEIGHT, CARD_WIDTH, CORNER_RADIUS, CORNER_RADIUS);
 
             // Draw the outline
             g.setColor(Color.white);
-            g.drawRoundRect(x+7,y+5, CARD_HEIGHT- 16, CARD_WIDTH - 10,12, 12);
+            g.drawRoundRect(x + OUTLINE_MARGIN_Y,y + OUTLINE_MARGIN_X, OUTLINE_HEIGHT, OUTLINE_WIDTH, CORNER_RADIUS, CORNER_RADIUS);
         } else {
-            g.fillRoundRect(x, y, CARD_WIDTH, CARD_HEIGHT, 12, 12);
+            g.fillRoundRect(x, y, CARD_WIDTH, CARD_HEIGHT, CORNER_RADIUS, CORNER_RADIUS);
 
             // Draw the outline
             g.setColor(Color.white);
-            g.drawRoundRect(x+5,y+7, CARD_WIDTH - 10,CARD_HEIGHT - 16, 12, 12);
+            g.drawRoundRect(x + OUTLINE_MARGIN_X,y+ OUTLINE_MARGIN_Y, OUTLINE_WIDTH, OUTLINE_HEIGHT, CORNER_RADIUS, CORNER_RADIUS);
         }
     }
 
     public void draw(Graphics g, int x, int y) {
         // Draw the card
         g.setColor(getColor());
-        g.fillRoundRect(x, y, CARD_WIDTH, CARD_HEIGHT, 12, 12);
+        g.fillRoundRect(x, y, CARD_WIDTH, CARD_HEIGHT, CORNER_RADIUS, CORNER_RADIUS);
 
         // Draw the outline
         g.setColor(Color.white);
-        g.drawRoundRect(x+5,y+7, CARD_WIDTH - 10, CARD_HEIGHT - 16, 12, 12);
+        g.drawRoundRect(x + OUTLINE_MARGIN_X,y + OUTLINE_MARGIN_Y, OUTLINE_WIDTH, OUTLINE_HEIGHT, CORNER_RADIUS, CORNER_RADIUS);
 
+
+        // Used to determine the coordinates of the string
+        boolean doubleDigit = false;
+
+        // Selects the correct string inside the UNO Card and the placement
         String s = rank;
-        Boolean doubleDigit = false;
         if (rank.equals(("Wild"))) {
             s = "WC";
             doubleDigit = true;
@@ -103,12 +124,13 @@ public class Card {
             doubleDigit = true;
         }
 
-        g.setFont(new Font("Monospaced", Font.PLAIN, 40));
+        // Set up the font for String
+        g.setFont(new Font("Monospaced", Font.PLAIN, FONT_SIZE));
+
         if (doubleDigit) {
-            // TODO: fix the symmetry
-            g.drawString(s, x + 8, y + 60);
+            g.drawString(s, x + FONT_MARGIN_SINGLEX, y + FONT_MARGIN_Y);
         } else {
-            g.drawString(s, x + 18, y + 60);
+            g.drawString(s, x + FONT_MARGIN_DOUBLEX, y + FONT_MARGIN_Y);
         }
     }
 }
