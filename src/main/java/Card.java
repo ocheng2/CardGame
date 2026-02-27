@@ -63,9 +63,7 @@ public class Card {
     }
 
     public Color getColor() {
-        if (rank.equals("Wild") || rank.equals("Wild Draw")) {
-            return Color.BLACK;
-        } else if(suit.equals("Red")) {
+        if (suit.equals("Red")) {
             return UNO_RED;
         } else if (suit.equals("Yellow")) {
             return UNO_YELLOW;
