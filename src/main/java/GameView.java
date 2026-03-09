@@ -6,7 +6,6 @@ import java.util.ArrayList;
 public class GameView extends JFrame {
     private final int WINDOW_WIDTH = 1000;
     private final int WINDOW_HEIGHT = 800;
-    public final int TITLE_BAR_HEIGHT = 23;
 
     public final int BACKGROUND_COOR = 0;
 
