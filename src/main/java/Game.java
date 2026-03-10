@@ -238,29 +238,23 @@ public class Game {
     {
         // Asks the player the card they would like to place
         Card chosenCard = null;
+        int index;
 
         do
         {
-            System.out.println("What card would you like to place? (Rank of Suit)");
-            String inputCard = input.nextLine();
-            chosenCard = getCardFromHand(player, inputCard);
-        }
-        while (chosenCard == null || !isValidCard(chosenCard));
-
-        cases(chosenCard, player);
-    }
-
-    // Checks if the card Player choose to put down is apart of their hand and returns the Card
-    public Card getCardFromHand(Player player, String selectedCard)
-    {
-        for (Card card: player.getHand())
-        {
-            if (card.toString().equals(selectedCard))
-            {
-                return card;
+            System.out.println("What card would you like to place? (enter index)");
+            // User inputs number above the card - convert to the actual index
+            index = input.nextInt() - 1;
+            input.nextLine();
+            // If index is valid
+            if (index >= 0 && index < player.getHand().size()){
+                chosenCard = player.getHand().get(index);
             }
         }
-        return null;
+        // Do until card is valid and index is valid
+        while (chosenCard == null || !isValidCard(chosenCard) || index < 0 || index > player.getHand().size());
+
+        cases(chosenCard, player);
     }
 
     // Checks if the card fits the criteria to be put down

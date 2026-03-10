@@ -1,6 +1,7 @@
 // GameView by Olivia Cheng
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class GameView extends JFrame {
@@ -150,22 +151,28 @@ public class GameView extends JFrame {
     // Goes through the player's hand to draw either their hand or the amount of cards
     public void paintPlayerHand(Graphics g, ArrayList<Card> hand, int positionIndex, int x, int y) {
         // Iterates through player's hand to draw each one
-        for (Card c : hand) {
+        for (int i = 0; i < hand.size(); i++) {
             // Draw their hand at the bottom if currPlayer
+            Card current = hand.get(i);
             if (positionIndex == 0) {
-                c.draw(g, x, y);
+                current.draw(g, x, y);
+                // Draw the index of the card (starting at 1) below the card
+                String index = Integer.toString(i + 1);
+                // Change font size
+                g.setFont(new Font("Serif", Font.ITALIC, FONTSIZE_SUBTITLE - 5));
+                g.drawString(index, x + (current.CARD_WIDTH/2 - 10), y - 20);
                 // Ensures the cards do not overlap
                 x += CARD_SPACING;
             }
             // If they are 1st or 3rd player, draw cards horizontal
             else if (positionIndex % 2 == 1) {
-                c.drawBack(g, x, y, true);
+                current.drawBack(g, x, y, true);
                 // Ensures the cards do not overlap
                 y -= CARD_SPACING;
             }
             // If they are 2nd player, draw cards vertical
             else {
-                c.drawBack(g, x, y, false);
+                current.drawBack(g, x, y, false);
                 // Ensures the cards do not overlap
                 x += CARD_SPACING;
             }
