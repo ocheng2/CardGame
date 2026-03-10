@@ -238,16 +238,21 @@ public class Game {
     {
         // Asks the player the card they would like to place
         Card chosenCard = null;
+        int index;
 
         do
         {
             System.out.println("What card would you like to place? (enter index)");
-            // User inputs index of card
-            int index = input.nextInt();
+            // User inputs number above the card - convert to the actual index
+            index = input.nextInt() - 1;
             input.nextLine();
-            chosenCard = player.getHand().get(index);
+            // If index is valid
+            if (index >= 0 && index < player.getHand().size()){
+                chosenCard = player.getHand().get(index);
+            }
         }
-        while (chosenCard == null || !isValidCard(chosenCard));
+        // Do until card is valid and index is valid
+        while (chosenCard == null || !isValidCard(chosenCard) || index < 0 || index > player.getHand().size());
 
         cases(chosenCard, player);
     }
