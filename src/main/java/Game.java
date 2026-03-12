@@ -21,59 +21,68 @@ public class Game {
     public static final int STATE_MAIN = 2;
     public static final int STATE_END = 3;
 
-    public Game() {
-        // Set up with the initial Uno title view
-        this.state = STATE_BEGIN;
-        window = new GameView(this);
-        System.out.println("Hit \"ENTER\" to go to the Instructions and fill out the basic information.");
-        input.nextLine();
 
-        // Set up the instructions view
-        this.state = STATE_INSTRU;
-        printInstructions();
-        window.repaint();
+    public Game() {
+        window = new GameView(this);
+        resetGame(true); // true = Show instructions the very first time
+    }
+
+    // Pass a boolean to determine if we should pause for the instructions
+// Pass a boolean to determine if we should pause for the instructions
+    public void resetGame(boolean isFirstTime) {
+        setRestartRequested(false); // Reset the flag
+
+        if (isFirstTime) {
+            // Set up with the initial Uno title view
+            this.state = STATE_BEGIN;
+            window.repaint();
+            System.out.println("\nHit \"ENTER\" to go to the Instructions and fill out the basic information.");
+            input.nextLine();
+
+            // Set up the instructions view
+            this.state = STATE_INSTRU;
+            printInstructions();
+            window.repaint();
+        } else {
+            // Keep the current visual state exactly as it is (either MAIN or END).
+            // Do NOT repaint or change to STATE_INSTRU here.
+            System.out.println("\n--- RESTARTING: SETTING UP NEW ROUND ---");
+        }
 
         // Ask and store user input on number of players
         int numPlayers = 0;
         while (numPlayers < 2 || numPlayers > 4) {
             System.out.println("How many players would you like? (From 2-4)");
-
-            // Set up numPlayers
-            numPlayers = input.nextInt();
-            input.nextLine();
+            try {
+                numPlayers = Integer.parseInt(input.nextLine());
+            } catch (NumberFormatException e) {
+                // Ignore and loop again if they don't type a valid number
+            }
         }
 
         // Create an array for each Player's name
         String[] playerNames = new String[numPlayers];
 
-        // Asks for each Player's name and store in array names
-        for (int i = 0; i < numPlayers; i++)
-        {
-            System.out.println("What is your name " + "Player " + (i+1) + "?");
+        for (int i = 0; i < numPlayers; i++) {
+            System.out.println("What is your name Player " + (i+1) + "?");
             playerNames[i] = input.nextLine();
         }
 
         players = new Player[numPlayers];
 
-        // Creates instances of Player Class and adds it into the players array
         for (int i = 0; i < numPlayers; i++) {
             players[i] = new Player(playerNames[i]);
         }
 
-        // Calls to the Deck class to initialize an instance of a deck
-        String[] ranks = {
-                "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-                "Skip", "Draw Two", "Wild", "Wild Draw"};
+        // Initialize a brand new deck
+        String[] ranks = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Skip", "Draw Two", "Wild", "Wild Draw"};
         String[] suits = {"Red", "Yellow", "Green", "Blue"};
         int[] numCards = {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4};
-
         deck = new Deck(ranks, suits, numCards);
 
-        // Gives each player 7 cards for their hand
-        for (Player player: players)
-        {
-            for (int i = 0; i < DRAW_NUM; i++)
-            {
+        // Deal 7 fresh cards to each player
+        for (Player player: players) {
+            for (int i = 0; i < DRAW_NUM; i++) {
                 player.addCard(deck.deal());
             }
         }
@@ -81,9 +90,25 @@ public class Game {
         topCard = deck.deal();
         playerIndex = 0;
 
-        // Set up the game state
+        // NOW we switch the state back to the main game and repaint.
+        // The screen will instantly update from the old game to the newly dealt game!
         state = STATE_MAIN;
         window.repaint();
+    }
+    // Use 'volatile' to ensure the main thread instantly sees changes made by the GUI thread
+    private volatile boolean restartRequested = false;
+
+    public void setRestartRequested(boolean restartRequested) {
+        this.restartRequested = restartRequested;
+    }
+
+    public boolean isRestartRequested() {
+        return restartRequested;
+    }
+
+    // Cleanly destroys the old JFrame before opening a new one
+    public void closeWindow() {
+        window.dispose();
     }
 
     public int getState() {
@@ -131,7 +156,7 @@ public class Game {
         Player currPlayer = players[playerIndex];
 
         // Continues the game until a player has no more cards left
-        while (!currPlayer.isWon())
+        while (!currPlayer.isWon() && !isRestartRequested())
         {
             // Print the current player's name, hand, and the current topCard
             System.out.println(currPlayer.toString());
@@ -142,12 +167,11 @@ public class Game {
             {
                 // Ask user if they would like to put a Card
                 String action;
-                do
-                {
+                do {
                     System.out.println("Would you like to place a card or draw? (Yes for Card/No for Draw)");
                     action = input.nextLine().toUpperCase();
-                }
-                while (!action.equals("YES") && !action.equals("NO"));
+                    if (isRestartRequested()) return null; // Escape immediately
+                } while (!action.equals("YES") && !action.equals("NO"));
 
                 // Depending on the user's action, the Player can put down or draw a card
                 if (action.equals("YES"))
@@ -218,13 +242,11 @@ public class Game {
         {
             // Ask the user if they want to play their newly drawn card
             String action;
-            do
-            {
+            do {
                 System.out.println("Would you like to place your newly drawn card down? (Yes/No)");
                 action = input.nextLine().toUpperCase();
-            }
-            while (!action.equals("YES") && !action.equals("NO"));
-
+                if (isRestartRequested()) return; // Escape immediately
+            } while (!action.equals("YES") && !action.equals("NO"));
             // Player puts the new drawn card down; update the topCard and their hand
             if (action.equals("YES"))
             {
@@ -234,25 +256,24 @@ public class Game {
     }
 
     // Asks the user for a valid Card to place down, and calls the next function to execute the rank of the card
-    public void putCard(Player player)
-    {
-        // Asks the player the card they would like to place
+    public void putCard(Player player) {
         Card chosenCard = null;
-        int index;
+        int index = -1;
 
-        do
-        {
+        do {
             System.out.println("What card would you like to place? (enter index)");
-            // User inputs number above the card - convert to the actual index
-            index = input.nextInt() - 1;
-            input.nextLine();
-            // If index is valid
-            if (index >= 0 && index < player.getHand().size()){
-                chosenCard = player.getHand().get(index);
+            String line = input.nextLine();
+            if (isRestartRequested()) return; // Escape immediately
+
+            try {
+                index = Integer.parseInt(line) - 1;
+                if (index >= 0 && index < player.getHand().size()){
+                    chosenCard = player.getHand().get(index);
+                }
+            } catch (NumberFormatException e) {
+                index = -1; // Invalid input
             }
-        }
-        // Do until card is valid and index is valid
-        while (chosenCard == null || !isValidCard(chosenCard) || index < 0 || index > player.getHand().size());
+        } while (chosenCard == null || !isValidCard(chosenCard) || index < 0 || index >= player.getHand().size());
 
         cases(chosenCard, player);
     }
@@ -297,15 +318,13 @@ public class Game {
     }
 
     // Resets the color of the top card based on user input
-    public void wild()
-    {
+    public void wild() {
         String inputColor;
-        do
-        {
+        do {
             System.out.println("What color do you want the top card to be? (Red/Yellow/Green/Blue)");
             inputColor = input.nextLine();
-        }
-        while (!inputColor.equals("Red") && !inputColor.equals("Yellow") && !inputColor.equals("Green") && !inputColor.equals("Blue"));
+            if (isRestartRequested()) return; // Escape immediately
+        } while (!inputColor.equals("Red") && !inputColor.equals("Yellow") && !inputColor.equals("Green") && !inputColor.equals("Blue"));
 
         topCard.setSuit(inputColor);
     }
@@ -336,10 +355,30 @@ public class Game {
     }
 
     public static void main(String[] args) {
-        // Creates an instance of the Game class
-        Game uno = new Game();
+        Game uno = new Game(); // This automatically calls resetGame(true) in the constructor
 
-        Player winner = uno.playGame();
-        System.out.println(winner.getName() + " is the winner of UNO!");
+        while (true) {
+            Player winner = uno.playGame();
+
+            // If winner is null, it means the player clicked Restart mid-game
+            if (uno.isRestartRequested()) {
+                uno.resetGame(false); // Skip instructions!
+                continue;
+            }
+
+            System.out.println(winner.getName() + " is the winner of UNO!");
+            System.out.println("Click the 'RESTART' button in the game window to play again.");
+
+            // Wait until the user clicks the Restart button on the end screen
+            while (!uno.isRestartRequested()) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            uno.resetGame(false);  // Skip instructions!
+        }
     }
 }
