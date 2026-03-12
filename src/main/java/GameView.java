@@ -3,12 +3,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class GameView extends JFrame {
     private final int WINDOW_WIDTH = 1000;
     private final int WINDOW_HEIGHT = 800;
 
     public final int BACKGROUND_COOR = 0;
+
+    public final int RESTART_MAIN_X = 440;
+    public final int RESTART_MAIN_Y = 300;
+
+    // (Keep your previous RESTART_X and RESTART_Y for the end screen too!)
+    public final int RESTART_X = 440;
+    public final int RESTART_Y = 500;
 
     // Position of the Player cards
     public final int X_VER = 200;
@@ -64,8 +73,35 @@ public class GameView extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("UNO Game");
         this.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        // Listen for mouse clicks on the JFrame
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
+
+                // If on the end screen
+                if (backend.getState() == Game.STATE_END) {
+                    if (x >= RESTART_X && x <= RESTART_X + BUTTON_WIDTH &&
+                            y >= RESTART_Y && y <= RESTART_Y + BUTTON_HEIGHT) {
+                        backend.setRestartRequested(true);
+                    }
+                }
+                // If in the middle of the game
+                else if (backend.getState() == Game.STATE_MAIN) {
+                    if (x >= RESTART_MAIN_X && x <= RESTART_MAIN_X + BUTTON_WIDTH &&
+                            y >= RESTART_MAIN_Y && y <= RESTART_MAIN_Y + BUTTON_HEIGHT) {
+                        backend.setRestartRequested(true);
+                        System.out.println("\n[Restart Requested! Please hit ENTER in the console to confirm...]");
+                    }
+                }
+            }
+        });
+
         this.setVisible(true);
     }
+
 
     // Manages the different view states
     public void paint(Graphics g) {
@@ -80,6 +116,7 @@ public class GameView extends JFrame {
             g.drawImage(instructionsImage, BACKGROUND_COOR, BACKGROUND_COOR, this);
         }
         // Game view
+// Game view
         else if (state == Game.STATE_MAIN) {
             paintBackground(g);
 
@@ -90,8 +127,10 @@ public class GameView extends JFrame {
             paintActionButtons(g, "PLACE A CARD", 370, 360);
             paintActionButtons(g, "DRAW A CARD", 510, 360);
             paintCenterCards(g, backend.getTopCard());
-        }
-        // End view
+
+            // NEW: Draw the Restart button in the top left
+            paintActionButtons(g, "RESTART", RESTART_MAIN_X, RESTART_MAIN_Y);
+        }        // End view
         else if (state == Game.STATE_END) {
             paintEndUNO(g);
         }
@@ -122,6 +161,9 @@ public class GameView extends JFrame {
         // Set up font and write subtitle name
         g.setFont(new Font("Serif", Font.ITALIC, FONTSIZE_SUBTITLE));
         g.drawString("Hope you had some fun.", SUBTITLE_X, SUBTITLE_Y);
+
+        // Draw the restart button
+        paintActionButtons(g, "RESTART", RESTART_X, RESTART_Y);
     }
 
     // Paints the center console of the Game, including topCard and the default draw stack
